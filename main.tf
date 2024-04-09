@@ -63,7 +63,7 @@ resource "aws_sns_topic" "sns_topic" {
 
 resource "aws_sns_topic_subscription" "user_updates_sqs_target" {
   for_each  = var.sqs_queues
-  topic_arn = aws_sns_topic.sns_topic["${each.value["sns_topic_name"]}"].arn #_${var.environment}"].arn
+  topic_arn = aws_sns_topic.sns_topic["${each.value["sns_topic_name"]}"].arn 
   
   protocol  = "sqs"
   endpoint  = aws_sqs_queue.sqs_queue[each.key].arn
