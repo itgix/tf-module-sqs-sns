@@ -2,15 +2,15 @@ locals {
   dlq_list = { for idx, q in var.sqs_queues : idx => q if q.dlq_enable }
 }
 
-# Primary Queue creation
+## Primary Queue creation
 resource "aws_sqs_queue" "sqs_queue" {
   for_each                  = var.sqs_queues
 
-  name                      = each.key
-  delay_seconds             = each.value["delay_seconds"]
-  max_message_size          = each.value["max_message_size"]
-  message_retention_seconds = each.value["message_retention_seconds"]
-  receive_wait_time_seconds = each.value["receive_wait_time_seconds"]
+  name                      = "${each.key}_${var.environment}" 
+  delay_seconds             = lookup(each.value, "delay_seconds", 0)
+  max_message_size          = lookup(each.value, "max_message_size", 262144)
+  message_retention_seconds = lookup(each.value, "message_retention_seconds", 86400)
+  receive_wait_time_seconds = lookup(each.value, "receive_wait_time_seconds", 0)
 
   tags                      = merge(var.global_tags, each.value["tags"])
 }
@@ -54,7 +54,7 @@ resource "aws_sqs_queue_redrive_allow_policy" "dlq_allow" {
 # SNS Topic Creation
 resource "aws_sns_topic" "sns_topic" {
   for_each   = var.sns_topics
-  name       = each.key
+  name       = "${each.key}_${var.environment}" 
 
   fifo_topic        = lookup(each.value, "enable_fifo", false)
   kms_master_key_id = lookup(each.value, "kms_key_id", null)

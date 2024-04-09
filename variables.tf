@@ -21,3 +21,8 @@ variable "sns_topics" {
   default     = {}
   description = "Complex dict of sns topic definitions. Refer to the Readme for more info"
 }
+
+variable "environment" {
+  default    = {}
+  description = "Environment"
+}
