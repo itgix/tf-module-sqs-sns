@@ -22,7 +22,7 @@ variable "sns_topics" {
   description = "Complex dict of sns topic definitions. Refer to the Readme for more info"
 }
 
-#variable "environment" {
-#  type = string
-#  description = "Environment"
-#}
+variable "environment" {
+  type = string
+  description = "Environment"
+}
