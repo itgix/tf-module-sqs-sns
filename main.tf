@@ -6,7 +6,7 @@ locals {
 resource "aws_sqs_queue" "sqs_queue" {
   for_each                  = var.sqs_queues
 
-  name                      = "${each.key}_${var.environment}" 
+  name                      = "${each.key}"+"_${var.environment}" 
   delay_seconds             = lookup(each.value, "delay_seconds", 0)
   max_message_size          = lookup(each.value, "max_message_size", 262144)
   message_retention_seconds = lookup(each.value, "message_retention_seconds", 86400)
@@ -63,8 +63,8 @@ resource "aws_sns_topic" "sns_topic" {
 
 resource "aws_sns_topic_subscription" "user_updates_sqs_target" {
   for_each  = var.sqs_queues
-  topic_arn = aws_sns_topic.sns_topic[each.value["sns_topic_name"]].arn
-
+  topic_arn = aws_sns_topic.sns_topic["${each.value["sns_topic_name"]}_${var.environment}"].arn
+  
   protocol  = "sqs"
   endpoint  = aws_sqs_queue.sqs_queue[each.key].arn
 }
