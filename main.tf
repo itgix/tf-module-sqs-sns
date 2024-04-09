@@ -12,7 +12,7 @@ resource "aws_sqs_queue" "sqs_queue" {
   message_retention_seconds = lookup(each.value, "message_retention_seconds", 86400)
   receive_wait_time_seconds = lookup(each.value, "receive_wait_time_seconds", 0)
 
-  tags                      = merge(var.global_tags, each.value["tags"])
+  tags                      = merge(var.global_tags, lookup(each.value, "tags", null)) 
 }
 
 # DLQ creation based on a trimmed list local.dlq_list
@@ -25,7 +25,7 @@ resource "aws_sqs_queue" "sqs_dlq" {
   message_retention_seconds = try(each.value["dlq_message_retention_seconds"], null)
   receive_wait_time_seconds = try(each.value["dlq_receive_wait_time_seconds"], null)
 
-  tags                      = merge(var.global_tags, each.value["tags"])
+  tags                      = merge(var.global_tags, lookup(each.value, "tags", null)) 
 }
 
 # DLQ Policy for the primary queue
@@ -58,7 +58,7 @@ resource "aws_sns_topic" "sns_topic" {
 
   fifo_topic        = lookup(each.value, "enable_fifo", false)
   kms_master_key_id = lookup(each.value, "kms_key_id", null)
-  tags              = merge(var.global_tags, each.value["tags"])
+  tags              = merge(var.global_tags, lookup(each.value, "tags", null))
 }
 
 resource "aws_sns_topic_subscription" "user_updates_sqs_target" {
